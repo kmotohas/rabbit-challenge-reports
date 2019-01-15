@@ -32,9 +32,9 @@ https://drive.google.com/open?id=10Ua35KTcEz1noU_QRJlX4JosuP1x8mjL
 $M\mathbf{v}=\sigma\mathbf{u}$
 $M^\mathrm{T}\mathbf{u}=\sigma\mathbf{v}$
 
-が成り立つとき、$\mathbf{u}$ を左特異ベクトル、$\mathbf{v}$ を右特異ベクトル、$\sigma$ を特異値という。左特異ベクトルを並べた行列を $U$、右特異ベクトルを並べた行列を $V$、特異値を対角成分に並べた行列を $S$ とすると、$M=USV^{-1}$ のように変形できる。この変形を特異値分解という。
+が成り立つとき、$\mathbf{u}$ を左特異ベクトル、$\mathbf{v}$ を右特異ベクトル、$\sigma$ を特異値という。左特異ベクトルを並べた行列を $U$、右特異ベクトルを並べた行列を $V$、特異値を対角成分に並べた行列を $S$ とすると、$M=USV^{-1}$ のように変形できる。この変形を特異値分解という。
 
-なお、$M^{\mathrm{T}}U=VS^\mathrm{T}$ から、$M^\mathrm{T}=VS^\mathrm{T}U^{-1}$ を得られることから、$MM^\mathrm{T}=USV^{-1}VS^{\mathrm{T}}U^{-1}=USS^{\mathrm{T}}U^{-1}$ となる。つまり、$MM^\mathrm{T}$ を固有値分解すれば、その左特異ベクトルと特異値の二乗が求められる。同じく、$M^\mathrm{T}M$ を固有値分解することで右特異ベクトルが得られる。
+なお、$M^{\mathrm{T}}U=VS^\mathrm{T}$ から、$M^\mathrm{T}=VS^\mathrm{T}U^{-1}$ を得られることから、$MM^\mathrm{T}=USV^{-1}VS^{\mathrm{T}}U^{-1}=USS^{\mathrm{T}}U^{-1}$ となる。つまり、$MM^\mathrm{T}$ を固有値分解すれば、その左特異ベクトルと特異値の二乗が求められる。同じく、$M^\mathrm{T}M$ を固有値分解することで右特異ベクトルが得られる。
 
 ## 第2章 確率・統計
 
