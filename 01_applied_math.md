@@ -1,9 +1,5 @@
 # 応用数学レポート
 
-講義資料
-
-https://drive.google.com/open?id=10Ua35KTcEz1noU_QRJlX4JosuP1x8mjL
-
 ## 第1章 線形代数
 
 本章で学ぶ項目は以下の通り。
