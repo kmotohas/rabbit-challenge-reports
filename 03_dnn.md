@@ -109,29 +109,182 @@ $$
 
 ### Section 1: 勾配消失問題について
 
+シグモイド関数は微分値が最大で0.25なため、層が深くなっていくと勾配が小さくなっていく。これを勾配消失問題という。ReLU関数では勾配消失問題を回避できる。現在最もよく使われている活性化関数はReLU関数である。
+
+重みの初期値設定手法には主にふたつある。
+
+- Xavier
+  - 重みの要素を、前の層のノード数の平方根で除算した値
+    - ReLU, sigmoid, tanh関数に対して用いる
+- He
+  - 重みの要素を、前の層のノード数の平方根で除算した値に対し $\sqrt{2}$ を掛け合わせた値
+    - ReLU関数に対して用いる
+
+さらに、バッチ正規化という、ミニバッチ単位で入力値のデータの偏りを抑制する手法を用いると良いとされている。勾配消失が起きづらくなるのとともに計算の高速化の効果を孕む。
+
+$$
+\mu_t=\frac{1}{N_t}\sum^{N_t}_{i=1}x_{ni}
+$$
+$$
+{\sigma_t}^2=\frac{1}{N_t}\sum^{N_t}_{i=1}(x_{ni}-\mu_t)^2
+$$
+$$
+\hat{x}_{ni}=\frac{x_{ni}-\mu_t}{\sqrt{{\sigma_t}^2+\theta}}
+$$
+$$
+y_{ni}=\gamma \hat{x}_{ni}+\beta
+$$
+
+以下、中間層に用いる活性化関数と初期化手法を変化させた場合のMNISTに対する分類精度を比較したプロットである。
+
+![](figures/initialization.png)
+
 ### Section 2: 学習率最適化手法について
+
+- Momentum
+  - $V_t=\mu V_{t-1}-\epsilon\nabla E$
+  - $w^{(t+1)}=w^{(t)}+V_t$
+  - 誤差をパラメータで微分したものと学習率の積を減算した後、現在の重みに前回の重みを減算した値と慣性の積を加算する
+- AdaGrad
+  - $h_0=\theta$
+  - $h_t=h_{t-1}+(\nabla E)^2$
+  - $w^{(t+1)}=w^{(t)}-\epsilon\frac{1}{\sqrt{h_t}+\theta}\nabla E$
+  - 誤差をパラメータで微分したものと再定義した学習率の積を減算する
+- RMSProp
+  - $h_t=\alpha h_{t-1}+(1-\alpha)(\nabla E)^2$
+  - $w^{(t+1)}=w^{(t)}-\epsilon\frac{1}{\sqrt{h_t}+\theta}\nabla E$
+  - 誤差をパラメータで微分したものと再定義した学習率の積を減算する
+- Adam
+  - モメンタムの、過去の勾配の指数関数的減衰平均
+  - RMSPropの、過去の勾配の2乗の指数関数的減衰平均
+  - 上記をそれぞれ孕んだ最適化アルゴリズムである
 
 ### Section 3: 過学習について
 
+過学習とはテスト誤差と訓練誤差とで学習曲線が乖離することである。原因としては、パラメータの数が多い、値が適切でない、ノードが多いなどと言ったものが挙げられる。ネットワークの自由度を制約する正則化という手法を用いて過学習を抑制することが求められる。
+
+$$
+E_n(\mathbf{w})+\frac{1}{p}\lambda ||x||_p
+$$
+
+$$
+||x||_p=(|x_1|^p+\cdots+|x_n|^p)^{\frac{1}{p}}
+$$
+
+以上のように誤差関数に $p$ ノルムを加えることをLp正則化と呼ぶ。$p=1$ の場合をLasso、$p=2$ の場合をRidgeとも呼ぶ。 また、ドロップアウトという、ランダムにノードを削除して学習させる手法も多く用いられる。
+
 ### Section 4: 畳み込みニューラルネットワークの概念
 
+CNNでは以下の図のようにフィルターを入力のテンソルに対して走査して要素ごとの積の和を取る。それにバイアスを足し、活性化関数に入力すると畳み込み層の出力値が得られる。
+
+![](figures/cnn.png)
+
+さらに、CNNに固有の概念としてパディングとストライドがある。パディングは入力のテンソルの周りに0などの固定値を追加することであり、ストライドはフィルターを走査する際のステップ幅のことである。
+
+CNNではプーリング層という対象領域のMax値または平均値を取得するような層が用いられることもある。
+
+$$
+\text{output image size}=\frac{n+2p-f}{s}+1
+$$
+
+ただし、$n$ は入力画像のサイズ、$f$ はフィルターサイズ、$p$ はパッディングの大きさ、$s$ はストライド幅である。
+
 ### Section 5: 最新のCNN
+
+AlexNetとは2012年に開かれた画像認識コンペティションImageNetにて2位に大差をつけて優勝したモデルである。5層の畳み込み層およびプーリング層など、それに続く3層の全結合層から構成される。サイズ4,096の全結合層の出力にドロップアウトを用いている。
 
 ## Day3
 
 ### Section 1: 再帰型ニューラルネットワークの概念
 
-### Section 2:
+RNNとは、時系列データに対応可能な、ニューラルネットワークである。ここで、時系列データとは時間的順序を追って一定間隔ごとに観察され、しかも相互に統計的依存関係が認められるようなデータの系列のことである。
 
-### Section 3:
+$$
+u^t=W_{(in)}x^t+Wz^{t-1}+b
+$$
+$$
+z^t=f(W_{(in)}x^t+Wz^{t-1}+b)
+$$
+$$
+v^t=W_{(out)}z^t+c
+$$
+$$
+y^t=g(W_{(out)}z^t+c)
+$$
 
-### Section 4:
+BPTT (Back Propagation Through Time) とは、RNNにおいてのパラメータ調整方法の一種であり、誤差逆伝播法の一種である。
 
-### Section 5:
+$$
+\frac{\partial E}{\partial W_{(in)}}=
+\frac{\partial E}{\partial u^t}
+\left[\frac{\partial u^t}{\partial W_{(in)}}\right]^\mathrm{T}=
+\delta^t[x^t]^\mathrm{T}
+$$
 
-### Section 6:
+$$
+\frac{\partial E}{\partial W_{(out)}}=
+\frac{\partial E}{\partial v^t}
+\left[\frac{\partial v^t}{\partial W_{(in)}}\right]^\mathrm{T}=
+\delta^{out,t}[z^t]^\mathrm{T}
+$$
 
-### Section 7:
+$$
+\frac{\partial E}{\partial W}=
+\frac{\partial E}{\partial u^t}
+\left[\frac{\partial u^t}{\partial W}\right]^\mathrm{T}=
+\delta^{t}[z^{t-1}]^\mathrm{T}
+$$
+
+$$
+\frac{\partial E}{\partial b}=
+\frac{\partial E}{\partial u^t}
+\frac{\partial u^t}{\partial b}=
+\delta^t
+$$
+
+$$
+\frac{\partial E}{\partial c}=
+\frac{\partial E}{\partial v^t}
+\frac{\partial v^t}{\partial c}=
+\delta^{out,t}
+$$
+
+### Section 2: LSTM
+
+単純なRNNでは時系列を遡るほど勾配が消失してしまい、長い時系列の学習が困難になる。構造自体を変えて勾配消失問題を解決したのがLSTMである。
+
+![](figures/lstm.png)
+
+CEC (Constant Error Carousel) 構造を用いて勾配が常に1になるようにして勾配消失問題を解決した。ただし、それでは時間依存度に関係なく重みが一律になり、学習特性がなくなる。入力・出力重み衝突が問題となる。そこで、入力ゲートと出力ゲートを用意した。さらに、CECは過去の情報が全て補完されており、過去の情報が入らなくなっても補完され続けるため、忘却ゲートという機構を導入した。CEC自身の値をゲート制御に影響させるために覗き穴結合を追加したネットワークを用いることもある。
+
+### Section 3: GRU
+
+従来のLSTMでは、パラメータが多数存在していたため、計算負荷が大きかった。しかし、GRUでは、そのパラメータを大幅に削減し、精度は同等またはそれ以上が望める様になった。
+
+![](figures/gru.png)
+
+### Section 4: 双方向RNN
+
+過去の情報だけでなく、未来の情報を加味することで、精度を向上させるためのモデル。文章の推敲や、機械翻訳などのタスクで用いられる。双方向RNNでは、順方向と逆方向に伝播したときの中間層表現をあわせたものが特徴量となる。
+
+![](figures/bi-rnn.png)
+
+### Section 5: Seq2Seq
+
+Seq2Seqはencoder-decoderモデルの一種。機械対話や、機械翻訳などに使用されている。
+encoder RNNではまずtokenizerで文章を単語等のトークンごとに分割し、IDに変換する。次にIDからそのトークンを表す分散表現へembeddingし、ベクトルを順番にRNNに入力していく。vec1をRNNに入力し、hidden stateを出力。このhidden stateと次の入力vec2をまたRNNに入力し、hidden stateを出力するという流れを繰り返す。最後のvecを入れたときのhidden stateをfinal stateとしてとっておく。このfinal stateがthought vectorと呼ばれ、入力した文の意味を表すベクトルとなる。Decoder RNNでは、Encoder RNNのfinal state (thought vector) から、各tokenの生成確率を出力していく。
+
+Seq2Seqの課題は一問一答しかできない点である。問いに対して文脈も何もなく、ただ応答が行われ続ける。それに対し、HRED (Hierarchical Recurrent Encoder-Decoder) では過去 $n-1$ 個の発話から次の発話を生成する。ただし、HREDは確率的な多様性が字面にしかなく、会話の「流れ」のような多様性が無い。同じコンテキスト(発話リスト)を与えられても、答えの内容が毎回会話の流れとしては同じものしか出せない。
+
+VHRED (Latent Variable Hierarchical Recurrent Encoder-Decoder) はHREDに、VAE (Variational Auto Encoder) の潜在変数の概念を追加したもの。
+
+### Section 6: Word2vec
+
+学習データからボキャブラリを作成するとき、単純には各単語をone-hotベクトルにすればよい。しかし、これではボキャブラリ$\times$ボキャブラリだけの重み行列が必要になる。Word2Vecでは大規模データの分散表現の学習が現実的な計算速度とメモリ量で実現可能となり、ボキャブラリ$\times$任意の単語ベクトル次元で重み行列を作ることができる。
+
+### Section 7: Attention Mechanism
+
+Seq2Seqでは長い文章への対応が難しい。何単語の系列に対しても固定次元のベクトルの中にエンコードしなくてはいけない。そこで、「入力と出力のどの単語が関連しているのか」の関連どを学習する仕組みとしてattention mechanismを導入。
 
 ## Day4
 
