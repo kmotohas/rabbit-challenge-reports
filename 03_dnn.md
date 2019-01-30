@@ -290,4 +290,87 @@ Seq2Seqでは長い文章への対応が難しい。何単語の系列に対し�
 
 ### Section 1: TensorFlowの実装演習
 
+`tf.constant()` で定数、`tf.placeholder()` でプレースホルダー、`tf.Variable()` で変数を定義する。 誤差関数、SGDは `tf.reduce_mean()` 、 `tf.train.GradientDescentOptimizer()` を用いる。Adamを使いたいときは `tf.train.AdamOptimzer()` を用いる。これらを用いて線形回帰、非線形回帰を行なった結果は以下の通り。
+
+![](figures/tf_linear.png)
+![](figures/tf_nonlinear.png)
+
+分類問題を解きたいときは `tf.nn.softmax()` を用いる。交差エントロピーは `-tf.reduce_sum(d * tf.log(y), reduction_indices=[1])` のようにして求める。CNNを構成するときは `tf.nn.conv2d()` や `tf.nn.relu()`, `tf.nn.max_pool` などを組み合わせる。ドロップアウトには `tf.nn.dropout()` を用いる。
+
+Kerasを用いるとさらに単純にネットワークを構成することができる。例えば、 `keras.models.Sequential` に対してそれぞれのレイヤーを `.add` していけばよい。
+
+```python:
+model = Sequential()
+ 
+model.add(Conv2D(32, (3, 3), padding='same',input_shape=x_train.shape[1:]))
+model.add(Activation('relu'))
+model.add(Conv2D(32, (3, 3)))
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+ 
+model.add(Conv2D(64, (3, 3), padding='same'))
+model.add(Activation('relu'))
+model.add(Conv2D(64, (3, 3)))
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+ 
+model.add(Flatten())
+model.add(Dense(512))
+model.add(Activation('relu'))
+model.add(Dropout(0.5))
+model.add(Dense(10))
+model.add(Activation('softmax'))
+```
+
+その後、誤差関数、最適化手法、評価指標を指定してモデルをコンパイルする。訓練は `.fit` を実行すれば良い。
+
+```python:
+# コンパイル
+model.compile(loss='categorical_crossentropy',optimizer='adam',metrics=['accuracy'])
+ 
+#訓練
+history = model.fit(x_train, d_train, epochs=20)
+```
+
+単純なRNNも同様な手続きで構築できる。
+
+```python:
+model = Sequential()
+
+model.add(SimpleRNN(units=16,
+               return_sequences=True,
+               input_shape=[8, 2],
+               go_backwards=False,
+               activation='relu',
+               # dropout=0.5,
+               # recurrent_dropout=0.3,
+               # unroll = True,
+            ))
+# 出力層
+model.add(Dense(1, activation='sigmoid', input_shape=(-1,2)))
+model.summary()
+model.compile(loss='mean_squared_error', optimizer=SGD(lr=0.1), metrics=['accuracy'])
+# model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
+
+history = model.fit(x_bin, d_bin.reshape(-1, 8, 1), epochs=5, batch_size=2)
+```
+
 ### Section 2: 強化学習
+
+強化学習とは
+
+応用例
+
+探索と利用のトレードオフ
+
+イメージ
+
+差分
+
+行動価値関数
+
+方策関数
+
+方策勾配法
